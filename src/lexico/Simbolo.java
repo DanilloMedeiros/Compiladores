@@ -5,6 +5,8 @@ public class Simbolo {
 	public String classificacao;
 	public int linha;
 
+	public Simbolo(){};
+	
 	public Simbolo(String token1, String classificacao1, int linha1) {
 		token = token1;
 		classificacao = classificacao1;

@@ -18,5 +18,6 @@ public class Dicionario {
 	public String comentario = ".*\\w+\\}{1}";
 	public String potencia = "\\d+\\.{1}\\d*\\e[+|-]\\d*";
 	public String espacoTabulacao = " |\t";
+	public String espaco = "\s";
     
 }
