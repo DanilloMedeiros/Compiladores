@@ -14,20 +14,22 @@ public class Test {
         Analisador al = new Analisador(dados);
 
         List<Simbolo> tabela = al.Lexico();
-
-        //al.Lexico();
-        
+    
         for (Simbolo simbolo : tabela) {
             System.out.println(simbolo.token + " " + simbolo.classificacao + " " + simbolo.linha);
            
         }
 
         
-        /*String s = "{";
+        
+        /*String s = "valor2;";
 
-        if(s.equals("{")){
-            System.out.printf("Chaves");
-        }*/
+        int pfim = s.length();//delimita a substring
+        int pcom = s.length()-1;//onde começa a substring
+
+        System.out.printf(s.substring(3,5));//l
+        */
+        
         
         
     }

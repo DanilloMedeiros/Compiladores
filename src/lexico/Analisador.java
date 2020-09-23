@@ -13,6 +13,7 @@ public class Analisador {
     String palavra;
     int pfim,pcom;
     boolean coment = false;
+    int ini;
 
     Dicionario dici = new Dicionario();
 
@@ -32,21 +33,19 @@ public class Analisador {
             palavras = linha.trim().split("\\s+");//separa todas as palavras em um array
 
             for(int j=0;j<palavras.length;j++){
-                
-                //Simbolo simb = new Simbolo();//conteudo que vai para a tabela
-
+                ini = 0;
                 palavra = palavras[j];
 
                 //usar essas variaveis para pegar delimitadores 
                 pfim = palavra.length();//delimita a substring
                 pcom = palavra.length()-1;//onde começa a substring
                 
-                if(palavra.equals("{")){
+                if(palavra.equals("{")){//caso em que a chaves esta separada
                     coment = true;
                      continue;
                  }
 
-                 if(palavra.substring(0).equals("{")){
+                 if(palavra.substring(0).equals("{")){//caso em que a chaves esta junta da palavra
                     coment  = true;
                     continue;
                  }
@@ -56,15 +55,17 @@ public class Analisador {
                     continue;
                 }
 
-                if(coment == true){
-                    if(palavra.substring(pcom,pfim).equals("}"))
+                if(palavra.substring(pcom,pfim).equals("}")){
                         coment = false;
-                    continue;
+                        continue;
                 }
+
+                if(coment == true)
+                    continue;
                 //os codigos acima sao tratamentos de comentario
 
 
-                if(palavra.matches(dici.palavraReservada)){
+                else if(palavra.matches(dici.palavraReservada)){
                     tabela.add(new Simbolo(palavra,"Palavra reservada",i));
                     continue;
                 }
@@ -93,23 +94,52 @@ public class Analisador {
                     tabela.add(new Simbolo(palavra,"Delimitador",i));
                     continue;
                 }
+                
                 // verifica se tem delimitador, se tiver verifica a palavra que vem antes dele
                 //se n tiver ja verifica a palavra
                 else if(palavra.substring(pcom,pfim).matches(dici.delimitadores)){
-                    if(palavra.substring(0,pfim-2).matches(dici.palavraReservada)){
+
+                    for(int x=0; x<palavra.length()-1; x++){//verificar se tem outro delimitador, casos em que 
+                        //as palavras estao juntas
+                        if(palavra.substring(x,x+1).matches(dici.delimitadores)){
+
+                            if(palavra.substring(0,x).matches(dici.palavraReservada)){
+                                tabela.add(new Simbolo(palavra.substring(0,x-1),"palavra reservada",i));
+                            }
+    
+                            else if(palavra.substring(0,x).matches(dici.numerosInteiros)){
+                                tabela.add(new Simbolo(palavra.substring(0,pfim-2),"Numero inteiro",i));
+                            }
+    
+                            else if(palavra.substring(0,x).matches(dici.numerosReais)){
+                                tabela.add(new Simbolo(palavra.substring(0,pfim-2),"Numero real",i));
+                            }
+
+                            else if(palavra.substring(0,x).matches(dici.identificador)){
+                                tabela.add(new Simbolo(palavra.substring(0,pfim-2),"identificador",i));
+                            }
+    
+                                tabela.add(new Simbolo(palavra.substring(x,x+1),"Delimitdor",i));
+                                ini = x+1;
+                                break;
+                        }//if que achou o segundo delimitador
+                    }//if do for
+
+
+                    if(palavra.substring(ini,pfim-2).matches(dici.palavraReservada)){
                             tabela.add(new Simbolo(palavra.substring(0,pfim-2),"palavra reservada",i));
                     }
 
-                    else if(palavra.substring(0,pfim-2).matches(dici.identificador)){
-                        tabela.add(new Simbolo(palavra.substring(0,pfim-2),"identificador",i));
-                    }
-
-                    else if(palavra.substring(0,pfim-2).matches(dici.numerosInteiros)){
+                    else if(palavra.substring(ini,pfim-2).matches(dici.numerosInteiros)){
                         tabela.add(new Simbolo(palavra.substring(0,pfim-2),"Numero inteiro",i));
                     }
 
-                    else if(palavra.substring(0,pfim-2).matches(dici.numerosReais)){
+                    else if(palavra.substring(ini,pfim-2).matches(dici.numerosReais)){
                         tabela.add(new Simbolo(palavra.substring(0,pfim-2),"Numero real",i));
+                    }
+
+                    else if(palavra.substring(ini,pfim-2).matches(dici.identificador)){
+                        tabela.add(new Simbolo(palavra.substring(0,pfim-2),"identificador",i));
                     }
 
                     tabela.add(new Simbolo(palavra.substring(pcom,pfim),"Delimitdor",i));
