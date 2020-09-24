@@ -65,6 +65,16 @@ public class Analisador {
                 //os codigos acima sao tratamentos de comentario
 
 
+                else if(palavra.matches(dici.numerosInteiros)){
+                    tabela.add(new Simbolo(palavra,"Numero inteiro",i));
+                    continue;
+                }
+
+                else if(palavra.matches(dici.numerosReais)){
+                    tabela.add(new Simbolo(palavra,"Numero real",i));
+                    continue;
+                }
+
                 else if(palavra.matches(dici.palavraReservada)){
                     tabela.add(new Simbolo(palavra,"Palavra reservada",i));
                     continue;
@@ -80,15 +90,7 @@ public class Analisador {
                     continue;
                 }
 
-                else if(palavra.matches(dici.numerosInteiros)){
-                    tabela.add(new Simbolo(palavra,"Numero inteiro",i));
-                    continue;
-                }
-
-                else if(palavra.matches(dici.numerosReais)){
-                    tabela.add(new Simbolo(palavra,"Numero real",i));
-                    continue;
-                }
+                
 
                 else if(palavra.matches(dici.delimitadores)){
                     tabela.add(new Simbolo(palavra,"Delimitador",i));
@@ -101,56 +103,81 @@ public class Analisador {
 
                     for(int x=0; x<palavra.length()-1; x++){//verificar se tem outro delimitador, casos em que 
                         //as palavras estao juntas
-                        if(palavra.substring(x,x+1).matches(dici.delimitadores)){
+                        if(palavra.substring(x,x+1).matches(dici.delimitadores)){//acha o :
+                            if(palavra.substring(x,x+2).matches(dici.atribuicao)){//verifica se depois tem =
+                                
+                                if(palavra.substring(0,x).matches(dici.palavraReservada)){
+                                    tabela.add(new Simbolo(palavra.substring(0,x),"palavra reservada",i));
+                                }
+        
+                                else if(palavra.substring(0,x).matches(dici.numerosInteiros)){
+                                    tabela.add(new Simbolo(palavra.substring(0,x),"Numero inteiro",i));
+                                }
+        
+                                else if(palavra.substring(0,x).matches(dici.numerosReais)){
+                                    tabela.add(new Simbolo(palavra.substring(0,x),"Numero real",i));
+                                }
+    
+                                else if(palavra.substring(0,x).matches(dici.identificador)){
+                                    tabela.add(new Simbolo(palavra.substring(0,x),"identificador",i));
+                                }    
+                            
+                                tabela.add(new Simbolo(palavra.substring(x,x+2),"Atribuição",i));
+                                ini = x + 2;
+                                break;
+
+                            }//if da atribuição
 
                             if(palavra.substring(0,x).matches(dici.palavraReservada)){
-                                tabela.add(new Simbolo(palavra.substring(0,x-1),"palavra reservada",i));
+                                tabela.add(new Simbolo(palavra.substring(0,x),"palavra reservada",i));
                             }
     
                             else if(palavra.substring(0,x).matches(dici.numerosInteiros)){
-                                tabela.add(new Simbolo(palavra.substring(0,pfim-2),"Numero inteiro",i));
+                                tabela.add(new Simbolo(palavra.substring(0,x),"Numero inteiro",i));
                             }
     
                             else if(palavra.substring(0,x).matches(dici.numerosReais)){
-                                tabela.add(new Simbolo(palavra.substring(0,pfim-2),"Numero real",i));
+                                tabela.add(new Simbolo(palavra.substring(0,x),"Numero real",i));
                             }
 
                             else if(palavra.substring(0,x).matches(dici.identificador)){
-                                tabela.add(new Simbolo(palavra.substring(0,pfim-2),"identificador",i));
+                                tabela.add(new Simbolo(palavra.substring(0,x),"identificador",i));
                             }
-    
-                                tabela.add(new Simbolo(palavra.substring(x,x+1),"Delimitdor",i));
-                                ini = x+1;
-                                break;
+                                if(palavra.substring(x,x+1).matches(dici.delimitadores)){
+                                    
+                                    tabela.add(new Simbolo(palavra.substring(x,x+1),"Delimitdor",i));
+                                    ini = x+1;
+                                    break;
+
+                                }else if(palavra.substring(x,x+1).matches(dici.atribuicao)){
+                                    tabela.add(new Simbolo(palavra.substring(x,x+1),"Atribuição",i));
+                                    ini = x+1;
+                                    break;
+                                }
                         }//if que achou o segundo delimitador
                     }//if do for
 
-
-                    if(palavra.substring(ini,pfim-2).matches(dici.palavraReservada)){
-                            tabela.add(new Simbolo(palavra.substring(0,pfim-2),"palavra reservada",i));
+                    if(palavra.substring(ini,pfim-1).matches(dici.palavraReservada)){
+                            tabela.add(new Simbolo(palavra.substring(ini,pfim-1),"palavra reservada",i));
                     }
 
-                    else if(palavra.substring(ini,pfim-2).matches(dici.numerosInteiros)){
-                        tabela.add(new Simbolo(palavra.substring(0,pfim-2),"Numero inteiro",i));
+                    else if(palavra.substring(ini,pfim-1).matches(dici.numerosInteiros)){
+                        tabela.add(new Simbolo(palavra.substring(ini,pfim-1),"Numero inteiro",i));
                     }
 
-                    else if(palavra.substring(ini,pfim-2).matches(dici.numerosReais)){
-                        tabela.add(new Simbolo(palavra.substring(0,pfim-2),"Numero real",i));
+                    else if(palavra.substring(ini,pfim-1).matches(dici.numerosReais)){
+                        tabela.add(new Simbolo(palavra.substring(ini,pfim-1),"Numero real",i));
                     }
 
-                    else if(palavra.substring(ini,pfim-2).matches(dici.identificador)){
-                        tabela.add(new Simbolo(palavra.substring(0,pfim-2),"identificador",i));
+                    else if(palavra.substring(ini,pfim-1).matches(dici.identificador)){
+                        tabela.add(new Simbolo(palavra.substring(ini,pfim-1),"identificador",i));
                     }
 
                     tabela.add(new Simbolo(palavra.substring(pcom,pfim),"Delimitdor",i));
                     continue;
                 }//caso que tem delimitador
-                
-                
             }//for pra cada palavra
-
         }//for gloabal
-
         return tabela;
     }
 }
