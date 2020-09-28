@@ -3,7 +3,7 @@ package lexico;
 public class Dicionario {
 
     public String palavraReservada = "program|var|" + "integer|real|boolean|procedure|begin"
-			+ "|end|if|then|else|while|do|not" + "|case|true|false";
+			+ "|end|if|then|else|while|for|do|not|to" + "|case|true|false";
 	public String palavra = "[a-z]*|_*|[A-Z]*";
 	public String identificador = "\\_*\\w+[\\_\\w+]*";
 	public String delimitadores = "\\;|\\.|\\:|\\,|\\(|\\)";

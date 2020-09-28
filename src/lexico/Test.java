@@ -11,24 +11,26 @@ public class Test {
 
         List<String> dados = arq.ler("C:\\Users\\danil\\OneDrive\\Área de Trabalho\\test.txt");
 
-        Analisador al = new Analisador(dados);
+        //System.out.println(dados);
 
-        List<Simbolo> tabela = al.Lexico();
+         Analisador al = new Analisador(dados);
+
+         List<Simbolo> tabela = al.Lexico();
     
-        for (Simbolo simbolo : tabela) {
-            System.out.println(simbolo.token + " " + simbolo.classificacao + " " + simbolo.linha);
+           for (Simbolo simbolo : tabela) {
+             System.out.println(simbolo.token + " " + simbolo.classificacao + " " + simbolo.linha);
            
-        }
+         }
 
-        
+        //String dummy = "";
         
         /*String s = "valor2;";
 
         int pfim = s.length();//delimita a substring
         int pcom = s.length()-1;//onde começa a substring
-
-        System.out.printf(s.substring(3,5));//l
         */
+        //System.out.println(dummy.length());//l
+        
         
         
         

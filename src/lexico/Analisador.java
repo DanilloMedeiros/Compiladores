@@ -14,6 +14,7 @@ public class Analisador {
     int pfim,pcom;
     boolean coment = false;
     int ini;
+    String dummy;
 
     Dicionario dici = new Dicionario();
 
@@ -35,37 +36,53 @@ public class Analisador {
             for(int j=0;j<palavras.length;j++){
                 ini = 0;
                 palavra = palavras[j];
+                dummy = "";
 
                 //usar essas variaveis para pegar delimitadores 
                 pfim = palavra.length();//delimita a substring
                 pcom = palavra.length()-1;//onde começa a substring
+                
                 
                 if(palavra.equals("{")){//caso em que a chaves esta separada
                     coment = true;
                      continue;
                  }
 
-                 if(palavra.substring(0).equals("{")){//caso em que a chaves esta junta da palavra
-                    coment  = true;
-                    continue;
-                 }
-
+                
                 if(palavra.equals("}")){
                     coment = false;
                     continue;
-                }
-
-                if(palavra.substring(pcom,pfim).equals("}")){
-                        coment = false;
-                        continue;
                 }
 
                 if(coment == true)
                     continue;
                 //os codigos acima sao tratamentos de comentario
 
+             
+                for(int t = 0; t < palavra.length(); t++){//verificar se tem { no meio de uma frase
+                   
+                    if(palavra.substring(t, t+1).equals("{")){
+                       
+                        dummy += palavra.substring(0,t);//quando encontra atualiza a var palavra
+                        coment = true;
+                    }
 
-                else if(palavra.matches(dici.numerosInteiros)){
+                    if(palavra.substring(t, t+1).equals("}")){
+                        
+                        dummy += palavra.substring(t+1,palavra.length());//quando encontra atualiza a var palavra
+                        coment = false; 
+                    }
+                }
+
+                if(dummy.length() > 0){
+                    palavra = dummy;
+                    System.out.println(palavra);
+                    pfim = palavra.length();
+                    pcom = palavra.length()-1;
+                }
+              
+
+                if(palavra.matches(dici.numerosInteiros)){
                     tabela.add(new Simbolo(palavra,"Numero inteiro",i));
                     continue;
                 }
@@ -85,15 +102,25 @@ public class Analisador {
                     continue;
                 }
 
+                
                 else if(palavra.matches(dici.identificador)){
-                    tabela.add(new Simbolo(palavra,"Identificador",i));
+                        tabela.add(new Simbolo(palavra,"Identificador",i));
+                        continue;
+                    }
+                
+                
+                else if(palavra.matches(dici.delimitadores)){
+                    tabela.add(new Simbolo(palavra,"Delimitador",i));
                     continue;
                 }
 
+                else if(palavra.substring(pcom-1,pfim).matches(dici.atribuicao)){//caso que termina com atrib
+                    
+                    if(palavra.substring(0,pcom-1).matches(dici.identificador)){
+                        tabela.add(new Simbolo(palavra.substring(0,pcom-1),"identificador",i));
+                    }    
                 
-
-                else if(palavra.matches(dici.delimitadores)){
-                    tabela.add(new Simbolo(palavra,"Delimitador",i));
+                    tabela.add(new Simbolo(palavra.substring(pcom-1,pfim),"Atribuição",i));
                     continue;
                 }
                 
@@ -106,19 +133,7 @@ public class Analisador {
                         if(palavra.substring(x,x+1).matches(dici.delimitadores)){//acha o :
                             if(palavra.substring(x,x+2).matches(dici.atribuicao)){//verifica se depois tem =
                                 
-                                if(palavra.substring(0,x).matches(dici.palavraReservada)){
-                                    tabela.add(new Simbolo(palavra.substring(0,x),"palavra reservada",i));
-                                }
-        
-                                else if(palavra.substring(0,x).matches(dici.numerosInteiros)){
-                                    tabela.add(new Simbolo(palavra.substring(0,x),"Numero inteiro",i));
-                                }
-        
-                                else if(palavra.substring(0,x).matches(dici.numerosReais)){
-                                    tabela.add(new Simbolo(palavra.substring(0,x),"Numero real",i));
-                                }
-    
-                                else if(palavra.substring(0,x).matches(dici.identificador)){
+                                if(palavra.substring(0,x).matches(dici.identificador)){
                                     tabela.add(new Simbolo(palavra.substring(0,x),"identificador",i));
                                 }    
                             
