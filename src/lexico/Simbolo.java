@@ -11,5 +11,10 @@ public class Simbolo {
 		linha = linha1;
 	}
 
-}
+	@Override
+	public String toString() {
+		return "{" + " token='" + token + "'" + ", classificacao='" + classificacao + "'" + ", linha='" + linha + "'"
+				+ "}";
+	}
 
+}
