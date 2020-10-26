@@ -46,7 +46,7 @@ public class Sintatico {
     private void Error(String msg) {
         System.err.println("Error " + msg);
         System.err.println("line " + simbolo.linha);
-        System.exit(0);
+        // System.exit(0);
     }
 
     private boolean programa() {
@@ -56,9 +56,10 @@ public class Sintatico {
         }
 
         next();
+
         declaracoes_variaveis();
-        next();
-        System.out.println(declaracoes_de_subprogramas());
+        declaracoes_de_subprogramas();
+
         next();
         System.out.println(comando_composto());
 
@@ -84,51 +85,42 @@ public class Sintatico {
 
     private boolean declaracoes_variaveis() {
 
-        if (!simbolo.token.equals(Dicionario.VAR))
-            return false;
+        if (simbolo.token.equals(Dicionario.VAR)) {
+            next();
+            return lista_declaracoes_variaveis();
 
-        next();
-        return lista_de_identificadores();
+        }
+
+        return false;
     }
 
-    private boolean lista_de_identificadores() {
+    private boolean lista_declaracoes_variaveis() {
 
         if (simbolo.classificacao.equals(Dicionario.IDENTIFICADOR)) {
+
             next();
-            return lista_de_delimitadores();
+
+            if (simbolo.token.equals(",")) {
+                next();
+                return lista_declaracoes_variaveis();
+
+            } else if (simbolo.token.equals(":")) {
+                next();
+
+                if (tipo()) {
+                    next();
+                    return simbolo.token.equals(";");
+                }
+
+            }
+        } else {
+            Error("Variavel não identificada");
         }
 
-        back();
-        return false;
-
-    }
-
-    private boolean lista_de_delimitadores() {
-
-        switch (simbolo.token) {
-            case ",":
-
-                next();
-                return lista_de_identificadores();
-
-            case ":":
-
-                next();
-
-                if (!tipo_isValid())
-                    break;
-
-                next();
-                return lista_de_delimitadores();
-
-            case ";":
-                return true;
-
-        }
         return false;
     }
 
-    private boolean tipo_isValid() {
+    private boolean tipo() {
         return simbolo.token.matches(Dicionario.tipos);
     }
 
@@ -193,7 +185,7 @@ public class Sintatico {
             if (simbolo.token.equals(":")) {
                 next();
 
-                if (tipo_isValid()) {
+                if (tipo()) {
                     next();
 
                     if (simbolo.token.equals(",")) {
@@ -283,6 +275,7 @@ public class Sintatico {
             return true;
         } else if (simbolo.token.equals("while")) {
             next();
+            return true;
         }
 
         return false;
@@ -324,6 +317,13 @@ public class Sintatico {
                 return expressao_simples();
             } else {
                 back();
+            }
+            return true;
+
+        } else if (sinal()) {
+            next();
+            if (termo()) {
+                return true;
             }
             return true;
         }
@@ -373,10 +373,14 @@ public class Sintatico {
             return true;
 
         } else {
-            Error("Falta identificacao de variavel");
+            // Error("Falta identificacao de variavel");
         }
 
         return false;
+    }
+
+    private boolean sinal() {
+        return simbolo.token.matches(Dicionario.operadoresAditivos);
     }
 
     private boolean op_aditivo() {
