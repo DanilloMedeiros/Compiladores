@@ -83,42 +83,42 @@ public class Analisador {
                 }
 
                 // testes para palavras separadas
-                if (palavra.matches(dici.numerosInteiros)) {
-                    tabela.add(new Simbolo(palavra, "Numero inteiro", i));
+                if (palavra.matches(Dicionario.numerosInteiros)) {
+                    tabela.add(new Simbolo(palavra, Dicionario.NUMERO_INTEIRO, i));
                     continue;
                 }
 
-                else if (palavra.matches(dici.numerosReais)) {
-                    tabela.add(new Simbolo(palavra, "Numero real", i));
+                else if (palavra.matches(Dicionario.numerosReais)) {
+                    tabela.add(new Simbolo(palavra, Dicionario.NUMERO_REAL, i));
                     continue;
                 }
 
-                else if (palavra.matches(dici.palavraReservada)) {
-                    tabela.add(new Simbolo(palavra, "Palavra reservada", i));
+                else if (palavra.matches(Dicionario.palavraReservada)) {
+                    tabela.add(new Simbolo(palavra, Dicionario.PALAVRA_RESERVADA, i));
                     continue;
                 }
 
-                else if (palavra.matches(dici.atribuicao)) {
-                    tabela.add(new Simbolo(palavra, "Atribuição", i));
+                else if (palavra.matches(Dicionario.atribuicao)) {
+                    tabela.add(new Simbolo(palavra, Dicionario.ATRIBUICAO, i));
                     continue;
                 }
 
-                else if (palavra.matches(dici.identificador)) {
-                    tabela.add(new Simbolo(palavra, "Identificador", i));
+                else if (palavra.matches(Dicionario.identificador)) {
+                    tabela.add(new Simbolo(palavra, Dicionario.IDENTIFICADOR, i));
                     continue;
                 }
 
-                else if (palavra.matches(dici.delimitadores)) {
-                    tabela.add(new Simbolo(palavra, "Delimitador", i));
+                else if (palavra.matches(Dicionario.delimitadores)) {
+                    tabela.add(new Simbolo(palavra, Dicionario.DELIMITADOR, i));
                     continue;
                 }
 
-                else if (palavra.matches(dici.operadoresRelacionais)) {
+                else if (palavra.matches(Dicionario.operadoresRelacionais)) {
                     tabela.add(new Simbolo(palavra, "Operador Relacional", i));
                     continue;
                 }
 
-                else if (palavra.matches(dici.operadoresAditivos)) {
+                else if (palavra.matches(Dicionario.operadoresAditivos)) {
                     if (palavra.contains("+")) {
                         tabela.add(new Simbolo(palavra, "Operador aditivo", i));
                     } else {
@@ -127,9 +127,9 @@ public class Analisador {
                     continue;
                 }
 
-                else if (palavra.matches(dici.operadorMultiplicativo)) {
+                else if (palavra.matches(Dicionario.operadorMultiplicativo)) {
                     if (palavra.contains("*")) {
-                        tabela.add(new Simbolo(palavra, "Operador Multiplicativo", i));
+                        tabela.add(new Simbolo(palavra, Dicionario.OPERADOR_MULTIPLICATIVO, i));
                         continue;
                     } else {
                         tabela.add(new Simbolo(palavra, "Operador Divisão", i));
@@ -137,23 +137,26 @@ public class Analisador {
                     }
                 }
 
-                else if (palavra.matches(dici.operadoresRelacionais)) {
-                    tabela.add(new Simbolo(palavra, "Delimitador", i));
+                else if (palavra.matches(Dicionario.operadoresRelacionais)) {
+                    tabela.add(new Simbolo(palavra, Dicionario.DELIMITADOR, i));
                     continue;
                 }
 
                 // verifica se tem delimitador, se tiver verifica a palavra que vem antes dele
                 // se n tiver ja verifica a palavra
-                else if (palavra.substring(pcom, pfim).matches(dici.delimitadores)) {
+                else if (palavra.substring(pcom, pfim).matches(Dicionario.delimitadores)) {
 
                     int limit = palavra.length() - 1;
 
-                    if (palavra.substring(pcom - 1, pfim - 1).matches(dici.delimitadores)) {// caso que tem parenteses
-                                                                                            // junto com ;
+                    if (palavra.substring(pcom - 1, pfim - 1).matches(Dicionario.delimitadores)) {// caso que tem
+                                                                                                  // parenteses
+                        // junto com ;
                         if (palavra.length() == 2) {// caso que so tem ); :;
-                            tabela.add(new Simbolo(palavra.substring(pcom, pfim - 1), "Delimitdor", i));// add o
-                                                                                                        // delimitador
-                            tabela.add(new Simbolo(palavra.substring(pcom, pfim), "Delimitdor", i));// add o delimitador
+                            tabela.add(new Simbolo(palavra.substring(pcom, pfim - 1), Dicionario.DELIMITADOR, i));// add
+                                                                                                                  // o
+                            // delimitador
+                            tabela.add(new Simbolo(palavra.substring(pcom, pfim), Dicionario.DELIMITADOR, i));// add o
+                            // delimitador
                             break;
                         } else {
                             paren = true;
@@ -163,53 +166,54 @@ public class Analisador {
 
                     for (int x = ini; x < limit; x++) {// verificar se tem outro delimitador, casos em que
                         // as palavras estao juntas
-                        if (palavra.substring(x, x + 1).matches(dici.delimitadores)) {// acha o (
+                        if (palavra.substring(x, x + 1).matches(Dicionario.delimitadores)) {// acha o (
                             if (palavra.substring(x, x + 1).equals("(")) {
-                                tabela.add(new Simbolo(palavra.substring(x, x + 1), "Delimitdor", i));
+                                tabela.add(new Simbolo(palavra.substring(x, x + 1), Dicionario.DELIMITADOR, i));
                                 ini = x + 1;
                                 continue;
                             } else if (palavra.substring(x, x + 1).equals(":")) {
-                                if (palavra.substring(x, x + 2).matches(dici.atribuicao)) {// verifica se depois tem =
+                                if (palavra.substring(x, x + 2).matches(Dicionario.atribuicao)) {// verifica se depois
+                                                                                                 // tem =
 
-                                    tabela.add(new Simbolo(palavra.substring(ini, x), "identificador", i));
+                                    tabela.add(new Simbolo(palavra.substring(ini, x), Dicionario.IDENTIFICADOR, i));
 
-                                    tabela.add(new Simbolo(palavra.substring(x, x + 2), "Atribuição", i));
+                                    tabela.add(new Simbolo(palavra.substring(x, x + 2), Dicionario.ATRIBUICAO, i));
                                     ini = x + 2;
                                     break;
                                 } else {// caso que eh so os :
-                                    tabela.add(new Simbolo(palavra.substring(ini, x), "identificador", i));
-                                    tabela.add(new Simbolo(palavra.substring(x, x + 1), "Delimitdor", i));
+                                    tabela.add(new Simbolo(palavra.substring(ini, x), Dicionario.IDENTIFICADOR, i));
+                                    tabela.add(new Simbolo(palavra.substring(x, x + 1), Dicionario.DELIMITADOR, i));
                                     ini = x + 1;
                                     break;
                                 }
                             } else if (palavra.substring(x, x + 1).equals(",")) {
-                                tabela.add(new Simbolo(palavra.substring(ini, x), "identificador", i));
-                                tabela.add(new Simbolo(palavra.substring(x, x + 1), "Delimitdor", i));
+                                tabela.add(new Simbolo(palavra.substring(ini, x), Dicionario.IDENTIFICADOR, i));
+                                tabela.add(new Simbolo(palavra.substring(x, x + 1), Dicionario.DELIMITADOR, i));
                                 ini = x + 1;
                                 break;
                             }
 
                         } // if que achou o segundo delimitador
-                        else if (palavra.substring(ini, x + 1).matches(dici.operadoresRelacionais)) {
+                        else if (palavra.substring(ini, x + 1).matches(Dicionario.operadoresRelacionais)) {
                             tabela.add(new Simbolo(palavra.substring(x, x + 2), "Operador relacional", i));
                             ini = x + 2;
                             continue;
 
-                        } else if (palavra.substring(x, x + 1).matches(dici.operadoresAditivos)
-                                || palavra.substring(x, x + 1).matches(dici.operadorMultiplicativo)) {
+                        } else if (palavra.substring(x, x + 1).matches(Dicionario.operadoresAditivos)
+                                || palavra.substring(x, x + 1).matches(Dicionario.operadorMultiplicativo)) {
 
-                            if (palavra.substring(ini, x).matches(dici.identificador)) {
-                                tabela.add(new Simbolo(palavra.substring(ini, x), "identificador", i));
+                            if (palavra.substring(ini, x).matches(Dicionario.identificador)) {
+                                tabela.add(new Simbolo(palavra.substring(ini, x), Dicionario.IDENTIFICADOR, i));
 
-                            } else if (palavra.substring(ini, x).matches(dici.numerosInteiros)) {
+                            } else if (palavra.substring(ini, x).matches(Dicionario.numerosInteiros)) {
 
-                                tabela.add(new Simbolo(palavra.substring(ini, x), "Numero inteiro", i));
+                                tabela.add(new Simbolo(palavra.substring(ini, x), Dicionario.NUMERO_INTEIRO, i));
 
-                            } else if (palavra.substring(ini, x).matches(dici.numerosReais)) {
+                            } else if (palavra.substring(ini, x).matches(Dicionario.numerosReais)) {
 
-                                tabela.add(new Simbolo(palavra.substring(ini, x), "Numero Real", i));
+                                tabela.add(new Simbolo(palavra.substring(ini, x), Dicionario.NUMERO_REAL, i));
                             }
-                            if (palavra.substring(x, x + 1).matches(dici.operadoresAditivos)) {
+                            if (palavra.substring(x, x + 1).matches(Dicionario.operadoresAditivos)) {
                                 if (palavra.substring(x, x + 1).equals("+")) {
                                     tabela.add(new Simbolo(palavra.substring(x, x + 1), "Operador aditivo", i));
                                     ini = x + 1;
@@ -220,9 +224,10 @@ public class Analisador {
                                     break;
                                 }
 
-                            } else if (palavra.substring(x, x + 1).matches(dici.operadorMultiplicativo)) {
+                            } else if (palavra.substring(x, x + 1).matches(Dicionario.operadorMultiplicativo)) {
                                 if (palavra.substring(x, x + 1).equals("*")) {
-                                    tabela.add(new Simbolo(palavra.substring(x, x + 1), "Operador Multiplicativo", i));
+                                    tabela.add(new Simbolo(palavra.substring(x, x + 1),
+                                            Dicionario.OPERADOR_MULTIPLICATIVO, i));
                                     ini = x + 1;
                                     break;
                                 } else {
@@ -237,44 +242,47 @@ public class Analisador {
                     // verifica a palavra antes dos delimitadores
                     if (paren) {
 
-                        if (palavra.substring(ini, pfim - 2).matches(dici.palavraReservada)) {
-                            tabela.add(new Simbolo(palavra.substring(ini, pfim - 2), "palavra reservada", i));
+                        if (palavra.substring(ini, pfim - 2).matches(Dicionario.palavraReservada)) {
+                            tabela.add(new Simbolo(palavra.substring(ini, pfim - 2), Dicionario.PALAVRA_RESERVADA, i));
                         }
 
-                        else if (palavra.substring(ini, pfim - 2).matches(dici.numerosInteiros)) {
-                            tabela.add(new Simbolo(palavra.substring(ini, pfim - 2), "Numero inteiro", i));
+                        else if (palavra.substring(ini, pfim - 2).matches(Dicionario.numerosInteiros)) {
+                            tabela.add(new Simbolo(palavra.substring(ini, pfim - 2), Dicionario.NUMERO_INTEIRO, i));
                         }
 
-                        else if (palavra.substring(ini, pfim - 2).matches(dici.numerosReais)) {
-                            tabela.add(new Simbolo(palavra.substring(ini, pfim - 2), "Numero real", i));
+                        else if (palavra.substring(ini, pfim - 2).matches(Dicionario.numerosReais)) {
+                            tabela.add(new Simbolo(palavra.substring(ini, pfim - 2), Dicionario.NUMERO_REAL, i));
                         }
 
-                        else if (palavra.substring(ini, pfim - 2).matches(dici.identificador)) {
-                            tabela.add(new Simbolo(palavra.substring(ini, pfim - 2), "identificador", i));
+                        else if (palavra.substring(ini, pfim - 2).matches(Dicionario.identificador)) {
+                            tabela.add(new Simbolo(palavra.substring(ini, pfim - 2), Dicionario.IDENTIFICADOR, i));
                         }
 
-                        tabela.add(new Simbolo(palavra.substring(pcom - 1, pfim - 1), "Delimitdor", i));// add o
-                                                                                                        // delimitador
-                        tabela.add(new Simbolo(palavra.substring(pcom, pfim), "Delimitdor", i));// add o delimitador
+                        tabela.add(new Simbolo(palavra.substring(pcom - 1, pfim - 1), Dicionario.DELIMITADOR, i));// add
+                                                                                                                  // o
+                        // delimitador
+                        tabela.add(new Simbolo(palavra.substring(pcom, pfim), Dicionario.DELIMITADOR, i));// add o
+                                                                                                          // delimitador
                         continue;
                     } else {
 
-                        if (palavra.substring(ini, pfim - 1).matches(dici.palavraReservada)) {
-                            tabela.add(new Simbolo(palavra.substring(ini, pfim - 1), "palavra reservada", i));
+                        if (palavra.substring(ini, pfim - 1).matches(Dicionario.palavraReservada)) {
+                            tabela.add(new Simbolo(palavra.substring(ini, pfim - 1), Dicionario.PALAVRA_RESERVADA, i));
                         }
 
-                        else if (palavra.substring(ini, pfim - 1).matches(dici.numerosInteiros)) {
-                            tabela.add(new Simbolo(palavra.substring(ini, pfim - 1), "Numero inteiro", i));
+                        else if (palavra.substring(ini, pfim - 1).matches(Dicionario.numerosInteiros)) {
+                            tabela.add(new Simbolo(palavra.substring(ini, pfim - 1), Dicionario.NUMERO_INTEIRO, i));
                         }
 
-                        else if (palavra.substring(ini, pfim - 1).matches(dici.numerosReais)) {
-                            tabela.add(new Simbolo(palavra.substring(ini, pfim - 1), "Numero real", i));
+                        else if (palavra.substring(ini, pfim - 1).matches(Dicionario.numerosReais)) {
+                            tabela.add(new Simbolo(palavra.substring(ini, pfim - 1), Dicionario.NUMERO_REAL, i));
                         }
 
-                        else if (palavra.substring(ini, pfim - 1).matches(dici.identificador)) {
-                            tabela.add(new Simbolo(palavra.substring(ini, pfim - 1), "identificador", i));
+                        else if (palavra.substring(ini, pfim - 1).matches(Dicionario.identificador)) {
+                            tabela.add(new Simbolo(palavra.substring(ini, pfim - 1), Dicionario.IDENTIFICADOR, i));
                         }
-                        tabela.add(new Simbolo(palavra.substring(pcom, pfim), "Delimitdor", i));// add o delimitador
+                        tabela.add(new Simbolo(palavra.substring(pcom, pfim), Dicionario.DELIMITADOR, i));// add o
+                                                                                                          // delimitador
                         continue;
                     } // else
 
@@ -291,38 +299,38 @@ public class Analisador {
                     for (int k = 0; k < palavra.length(); k++) {// quando todo os casos anteriores falharem
 
                         if (palavra.substring(k, k + 1).equals("(")) {
-                            tabela.add(new Simbolo(palavra.substring(k, k + 1), "Delimitador", i));
+                            tabela.add(new Simbolo(palavra.substring(k, k + 1), Dicionario.DELIMITADOR, i));
                             init2++;
                             continue;
-                        } else if (palavra.substring(init2, k + 1).matches(dici.identificador)) {
+                        } else if (palavra.substring(init2, k + 1).matches(Dicionario.identificador)) {
                             if (k + 1 < palavra.length()) {
                                 continue;
                             } else {
-                                tabela.add(new Simbolo(palavra.substring(init2, k + 1), "Identificador", i));
+                                tabela.add(new Simbolo(palavra.substring(init2, k + 1), Dicionario.IDENTIFICADOR, i));
                                 break;
                             }
 
                         }
 
-                        else if (palavra.substring(k, k + 2).matches(dici.atribuicao)) {
+                        else if (palavra.substring(k, k + 2).matches(Dicionario.atribuicao)) {
 
-                            tabela.add(new Simbolo(palavra.substring(init2, k), "Identificador", i));
-                            tabela.add(new Simbolo(palavra.substring(k, k + 2), "Atribuição", i));
+                            tabela.add(new Simbolo(palavra.substring(init2, k), Dicionario.IDENTIFICADOR, i));
+                            tabela.add(new Simbolo(palavra.substring(k, k + 2), Dicionario.ATRIBUICAO, i));
                             if (k + 2 < palavra.length()) {// existe algo depois da atribuiçao i:=1
 
-                                if (palavra.substring(k + 2, palavra.length()).matches(dici.numerosInteiros)) {
-                                    tabela.add(new Simbolo(palavra.substring(k + 2, palavra.length()), "Numero inteiro",
-                                            i));
+                                if (palavra.substring(k + 2, palavra.length()).matches(Dicionario.numerosInteiros)) {
+                                    tabela.add(new Simbolo(palavra.substring(k + 2, palavra.length()),
+                                            Dicionario.NUMERO_INTEIRO, i));
                                 }
 
-                                if (palavra.substring(k + 2, palavra.length()).matches(dici.numerosReais)) {
-                                    tabela.add(
-                                            new Simbolo(palavra.substring(k + 2, palavra.length()), "Numero Real", i));
+                                if (palavra.substring(k + 2, palavra.length()).matches(Dicionario.numerosReais)) {
+                                    tabela.add(new Simbolo(palavra.substring(k + 2, palavra.length()),
+                                            Dicionario.NUMERO_REAL, i));
                                 }
 
-                                if (palavra.substring(k + 2, palavra.length()).matches(dici.identificador)) {
-                                    tabela.add(new Simbolo(palavra.substring(k + 2, palavra.length()), "Identificador",
-                                            i));
+                                if (palavra.substring(k + 2, palavra.length()).matches(Dicionario.identificador)) {
+                                    tabela.add(new Simbolo(palavra.substring(k + 2, palavra.length()),
+                                            Dicionario.IDENTIFICADOR, i));
                                 }
                                 break;
                             } else {
@@ -330,47 +338,47 @@ public class Analisador {
                             } // else
 
                         } // if do for
-                        else if (palavra.substring(k, k + 1).matches(dici.operadoresRelacionais)) {
-                            tabela.add(new Simbolo(palavra.substring(init2, k), "Identificador", i));
+                        else if (palavra.substring(k, k + 1).matches(Dicionario.operadoresRelacionais)) {
+                            tabela.add(new Simbolo(palavra.substring(init2, k), Dicionario.IDENTIFICADOR, i));
                             tabela.add(new Simbolo(palavra.substring(k, k + 1), "Operador relacional", i));
                             if (k + 2 < palavra.length()) {// existe algo depois do operador
 
-                                if (palavra.substring(k + 2, palavra.length()).matches(dici.numerosInteiros)) {
-                                    tabela.add(new Simbolo(palavra.substring(k + 2, palavra.length()), "Numero inteiro",
-                                            i));
+                                if (palavra.substring(k + 2, palavra.length()).matches(Dicionario.numerosInteiros)) {
+                                    tabela.add(new Simbolo(palavra.substring(k + 2, palavra.length()),
+                                            Dicionario.NUMERO_INTEIRO, i));
                                 }
 
-                                if (palavra.substring(k + 2, palavra.length()).matches(dici.numerosReais)) {
-                                    tabela.add(
-                                            new Simbolo(palavra.substring(k + 2, palavra.length()), "Numero Real", i));
+                                if (palavra.substring(k + 2, palavra.length()).matches(Dicionario.numerosReais)) {
+                                    tabela.add(new Simbolo(palavra.substring(k + 2, palavra.length()),
+                                            Dicionario.NUMERO_REAL, i));
                                 }
 
-                                if (palavra.substring(k + 2, palavra.length()).matches(dici.identificador)) {
-                                    tabela.add(new Simbolo(palavra.substring(k + 2, palavra.length()), "Identificador",
-                                            i));
+                                if (palavra.substring(k + 2, palavra.length()).matches(Dicionario.identificador)) {
+                                    tabela.add(new Simbolo(palavra.substring(k + 2, palavra.length()),
+                                            Dicionario.IDENTIFICADOR, i));
                                 }
                                 break;
                             }
 
-                        } else if (palavra.substring(k, k + 2).matches(dici.operadoresRelacionais)) {
+                        } else if (palavra.substring(k, k + 2).matches(Dicionario.operadoresRelacionais)) {
 
-                            tabela.add(new Simbolo(palavra.substring(init2, k), "Identificador", i));
+                            tabela.add(new Simbolo(palavra.substring(init2, k), Dicionario.IDENTIFICADOR, i));
                             tabela.add(new Simbolo(palavra.substring(k, k + 2), "Operador relacional", i));
                             if (k + 2 < palavra.length()) {// existe algo depois do operador
 
-                                if (palavra.substring(k + 2, palavra.length()).matches(dici.numerosInteiros)) {
-                                    tabela.add(new Simbolo(palavra.substring(k + 2, palavra.length()), "Numero inteiro",
-                                            i));
+                                if (palavra.substring(k + 2, palavra.length()).matches(Dicionario.numerosInteiros)) {
+                                    tabela.add(new Simbolo(palavra.substring(k + 2, palavra.length()),
+                                            Dicionario.NUMERO_INTEIRO, i));
                                 }
 
-                                if (palavra.substring(k + 2, palavra.length()).matches(dici.numerosReais)) {
-                                    tabela.add(
-                                            new Simbolo(palavra.substring(k + 2, palavra.length()), "Numero Real", i));
+                                if (palavra.substring(k + 2, palavra.length()).matches(Dicionario.numerosReais)) {
+                                    tabela.add(new Simbolo(palavra.substring(k + 2, palavra.length()),
+                                            Dicionario.NUMERO_REAL, i));
                                 }
 
-                                if (palavra.substring(k + 2, palavra.length()).matches(dici.identificador)) {
-                                    tabela.add(new Simbolo(palavra.substring(k + 2, palavra.length()), "Identificador",
-                                            i));
+                                if (palavra.substring(k + 2, palavra.length()).matches(Dicionario.identificador)) {
+                                    tabela.add(new Simbolo(palavra.substring(k + 2, palavra.length()),
+                                            Dicionario.IDENTIFICADOR, i));
                                 }
                                 break;
                             } else {
@@ -378,46 +386,47 @@ public class Analisador {
                             } // else
                         }
 
-                        else if (palavra.substring(k, k + 1).matches(dici.operadoresAditivos)
-                                || palavra.substring(k, k + 1).matches(dici.operadorMultiplicativo)) {
+                        else if (palavra.substring(k, k + 1).matches(Dicionario.operadoresAditivos)
+                                || palavra.substring(k, k + 1).matches(Dicionario.operadorMultiplicativo)) {
 
-                            if (palavra.substring(init2, k).matches(dici.identificador)) {
-                                tabela.add(new Simbolo(palavra.substring(init2, k), "identificador", i));
+                            if (palavra.substring(init2, k).matches(Dicionario.identificador)) {
+                                tabela.add(new Simbolo(palavra.substring(init2, k), Dicionario.IDENTIFICADOR, i));
 
-                            } else if (palavra.substring(init2, k).matches(dici.numerosInteiros)) {
+                            } else if (palavra.substring(init2, k).matches(Dicionario.numerosInteiros)) {
 
-                                tabela.add(new Simbolo(palavra.substring(init2, k), "Numero inteiro", i));
+                                tabela.add(new Simbolo(palavra.substring(init2, k), Dicionario.NUMERO_INTEIRO, i));
 
-                            } else if (palavra.substring(init2, k).matches(dici.numerosReais)) {
+                            } else if (palavra.substring(init2, k).matches(Dicionario.numerosReais)) {
 
-                                tabela.add(new Simbolo(palavra.substring(init2, k), "Numero Real", i));
+                                tabela.add(new Simbolo(palavra.substring(init2, k), Dicionario.NUMERO_REAL, i));
                             }
-                            if (palavra.substring(k, k + 1).matches(dici.operadoresAditivos)) {
+                            if (palavra.substring(k, k + 1).matches(Dicionario.operadoresAditivos)) {
                                 if (palavra.substring(k, k + 1).equals("+")) {
                                     tabela.add(new Simbolo(palavra.substring(k, k + 1), "Operador aditivo", i));
-                                    tabela.add(new Simbolo(palavra.substring(k + 1, palavra.length()), "Identificador",
-                                            i));
+                                    tabela.add(new Simbolo(palavra.substring(k + 1, palavra.length()),
+                                            Dicionario.IDENTIFICADOR, i));
                                     ini = k + 2;
                                     break;
                                 } else {
                                     tabela.add(new Simbolo(palavra.substring(k, k + 1), "Operador subtrativo", i));
-                                    tabela.add(new Simbolo(palavra.substring(k + 1, palavra.length()), "Identificador",
-                                            i));
+                                    tabela.add(new Simbolo(palavra.substring(k + 1, palavra.length()),
+                                            Dicionario.IDENTIFICADOR, i));
                                     ini = k + 2;
                                     break;
                                 }
 
-                            } else if (palavra.substring(k, k + 1).matches(dici.operadorMultiplicativo)) {
+                            } else if (palavra.substring(k, k + 1).matches(Dicionario.operadorMultiplicativo)) {
                                 if (palavra.substring(k, k + 1).equals("*")) {
-                                    tabela.add(new Simbolo(palavra.substring(k, k + 1), "Operador Multiplicativo", i));
-                                    tabela.add(new Simbolo(palavra.substring(k + 1, palavra.length()), "Identificador",
-                                            i));
+                                    tabela.add(new Simbolo(palavra.substring(k, k + 1),
+                                            Dicionario.OPERADOR_MULTIPLICATIVO, i));
+                                    tabela.add(new Simbolo(palavra.substring(k + 1, palavra.length()),
+                                            Dicionario.IDENTIFICADOR, i));
                                     ini = k + 2;
                                     break;
                                 } else {
                                     tabela.add(new Simbolo(palavra.substring(k, k + 1), "Operador Divisão", i));
-                                    tabela.add(new Simbolo(palavra.substring(k + 1, palavra.length()), "Identificador",
-                                            i));
+                                    tabela.add(new Simbolo(palavra.substring(k + 1, palavra.length()),
+                                            Dicionario.IDENTIFICADOR, i));
                                     ini = k + 2;
                                     break;
                                 }
