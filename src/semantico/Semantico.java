@@ -5,6 +5,9 @@ import java.util.LinkedList;
 import lexico.Dicionario;
 
 public class Semantico {
+
+    int escopo = 0;
+
     public LinkedList<Identificador> pilhaIdentificadores = new LinkedList<>();
     public String MARCA_CONTEXTO = "$";
 
@@ -20,26 +23,59 @@ public class Semantico {
         return true;
     }
 
+    public void pushId(Identificador id) {
+        if (!declaracao(id))
+            pilhaIdentificadores.push(id);
+    }
+
+    public void addTipoNasVariaveis(String tipo) {
+        int j = 0;
+
+        while ((j < (pilhaIdentificadores.size()) && (pilhaIdentificadores.get(j).tipo.equals("")))) {
+            pilhaIdentificadores.get(j++).tipo = tipo;
+        }
+    }
+
     public boolean declaracao(Identificador id) {
+        try {
 
-        int index = 0;
+            int index = 0;
 
-        String nome = pilhaIdentificadores.get(index).nome;
-        String tipo = pilhaIdentificadores.get(index).tipo;
+            String nome = pilhaIdentificadores.get(index).nome;
+            String tipo = pilhaIdentificadores.get(index).tipo;
 
-        while (!nome.equals(MARCA_CONTEXTO)) {
+            while (!nome.equals(MARCA_CONTEXTO)) {
 
-            if (nome.equals(id.nome)) {
-                System.out.println("Variavel " + id.nome + "é usada, mas não declarada");
-                return true;
+                if (nome.equals(id.nome)) {
+
+                    System.out.println("Variavel " + id.nome + "já foi declarada");
+                    return true;
+
+                }
+
+                index++;
+
+                nome = pilhaIdentificadores.get(index).nome;
+                tipo = pilhaIdentificadores.get(index).tipo;
             }
-            index++;
-
-            nome = pilhaIdentificadores.get(index).nome;
-            tipo = pilhaIdentificadores.get(index).tipo;
+        } catch (Exception e) {
+            System.out.println("Erro em declarações");
+            System.out.println(e);
         }
 
         return false;
+    }
+
+    public void escopoAberto() {
+        escopo++;
+
+    }
+
+    public void escopoFechado() {
+        escopo--;
+        if (escopo == 0) {
+            desempilha();
+        }
     }
 
     public boolean procura(Identificador id) {
@@ -55,7 +91,8 @@ public class Semantico {
             tipo = pilhaIdentificadores.get(index).tipo;
 
             // o identificador foi declado em algum local
-            if (nome.equals(id.nome) && tipo.equals(id.tipo)) {
+            if (nome.equals(id.nome)) {
+                System.out.println("Variável " + id.nome + "é usada, mas não foi declarada");
                 return true;
             }
             index++;
@@ -74,8 +111,6 @@ public class Semantico {
         // desempilha a delimitacao de contexto
         pilhaIdentificadores.pop();
     }
-
-    // public
 
     public boolean addProcedimentoPilha(Identificador id) {
 
@@ -100,6 +135,13 @@ public class Semantico {
     }
 
     public boolean isEquals(String str1, String str2) {
+        try {
+            System.out.println(str1);
+            System.out.println(str2);
+            return str1.equals(str2);
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
         return str1.equals(str2);
     }
 

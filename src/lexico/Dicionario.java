@@ -35,4 +35,6 @@ public class Dicionario {
 	public static String OPERADOR_MULTIPLICATIVO = "OPERADOR_MULTIPLICATIVO";
 	public static String ATRIBUICAO = "ATRIBUICAO";
 
+	public static String STR_NULO = "";
+
 }

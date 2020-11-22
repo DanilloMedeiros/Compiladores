@@ -87,8 +87,8 @@ public class Sintatico {
         if (is_program_id) {
             id = new Identificador(tabela.get(1).classificacao, tabela.get(0).token);
 
-            if(semantico.isEquals(id.nome, id.tipo)){
-                System.out.println("Erro Semântico, nome do programa é igual a " + id.tipo);
+            if(semantico.isEquals( id.nome, id.tipo)) {
+                System.out.println("Erro Semântico, nome do programa é igual a " + tabela.get(1).classificacao);
                 return false;
             }
 
@@ -114,6 +114,8 @@ public class Sintatico {
 
         if (simbolo.classificacao.equals(Dicionario.IDENTIFICADOR)) {
 
+            semantico.pushId(new Identificador(simbolo.token, Dicionario.STR_NULO));
+
             next();
 
             if (simbolo.token.equals(",")) {
@@ -124,6 +126,9 @@ public class Sintatico {
                 next();
 
                 if (tipo()) {
+
+                    semantico.addTipoNasVariaveis(simbolo.token);
+
                     next();
                     return simbolo.token.equals(";");
                 }
@@ -173,7 +178,6 @@ public class Sintatico {
         }
         return false;
     }
-
 
     private boolean argumentos() {
         if (simbolo.token.equals("(")) {
