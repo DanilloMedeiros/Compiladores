@@ -2,10 +2,14 @@ package sintatico;
 
 import java.util.List;
 import lexico.*;
+import semantico.Identificador;
+import semantico.Semantico;
 
 public class Sintatico {
 
     private List<Simbolo> tabela;
+    private Semantico semantico;
+    private Identificador id;
     Simbolo simbolo;
     private int index;
 
@@ -13,6 +17,7 @@ public class Sintatico {
         this.tabela = tabela;
         this.index = 0;
         this.simbolo = tabela.get(index);
+        this.semantico = new Semantico();
     }
 
     public void analisar() {
@@ -58,10 +63,14 @@ public class Sintatico {
         next();
 
         declaracoes_variaveis();
-        declaracoes_de_subprogramas();
-
         next();
-        System.out.println(comando_composto());
+        declaracoes_de_subprogramas();
+        comando_composto();// fim
+        next();// pega o ponto.
+        if (simbolo.token.equals(".")) {
+            System.out.println("Fim do programa");
+            System.exit(0);
+        }
 
         // if (!simbolo.token.equals("."))
         // Error();
@@ -76,6 +85,13 @@ public class Sintatico {
 
         // ja foram verificadas 3 linhas da tabela
         if (is_program_id) {
+            id = new Identificador(tabela.get(1).classificacao, tabela.get(0).token);
+
+            if(semantico.isEquals(id.nome, id.tipo)){
+                System.out.println("Erro Semântico, nome do programa é igual a " + id.tipo);
+                return false;
+            }
+
             next();
             next();
         }
@@ -147,7 +163,7 @@ public class Sintatico {
                         if (declaracoes_variaveis()) {
                             next();
                             declaracoes_de_subprogramas();
-                            return comando_composto();
+                            return true;
                         }
                     } else {
                         Error("Falta o token ;");
@@ -157,6 +173,7 @@ public class Sintatico {
         }
         return false;
     }
+
 
     private boolean argumentos() {
         if (simbolo.token.equals("(")) {
@@ -214,18 +231,26 @@ public class Sintatico {
             next();
 
             if (comandos_opcionais()) {
-                next();
-
-                if (simbolo.token.equals("end"))
+                if (simbolo.token.equals("end")) {
+                    next();
+                    if (simbolo.token.equals("end")) {
+                        next();
+                        simbolo.token.equals(".");
+                        System.out.println("Programa concluido com sucesso");
+                        System.exit(0);
+                        // return true;
+                    } else if (simbolo.token.equals("begin")) {
+                        comando_composto();
+                    }
                     return true;
-                else
+                } else
                     Error("Falta o token end");
-
+            } else {
+                Error("Erro no comando opcional");
+                return false;
             }
-
-        } else
-            Error("Falta o token end");
-
+        }
+        // Error("Erro sem begin");
         return false;
     }
 
@@ -233,49 +258,167 @@ public class Sintatico {
         if (lista_de_comandos()) {
             return true;
         }
-        return false;
+        return true;
     }
 
     private boolean lista_de_comandos() {
 
         if (comando()) {
-            next();
+            if (simbolo.token.equals(";")) {
+                next();
+                if (simbolo.token.equals("end"))
+                    return true;
+                else if (lista_de_comandos())
+                    return true;
 
-            if (lista_de_comandos()) {
-                // next();
-
-                return true;
-
-            } else {
-                back();
-                return true;
             }
-
         }
-
+        Error("Erro na linha de comandos");
         return false;
     }
 
     private boolean comando() {
+
         if (variavel()) {
-            next();
-
-            if (simbolo.token.equals(":=")) {
+            if (ativacaoDeProcedimento()) {
+                return true;
+            } else {
                 next();
-
-                if (expressao()) {
+                if (simbolo.token.equals(":=")) {
                     next();
-
-                    if (simbolo.token.equals(";"))
-                        return true;
+                    return expressao();
                 }
+            }
+        } else if (comando_composto()) {
+            return true;
 
+        } else if (simbolo.token.equals("if")) {
+            next();
+            if (expressao()) {
+                if (simbolo.token.equals("then")) {
+                    next();
+                    if (comando()) {
+                        next();
+                        if (simbolo.token.equals("else")) {
+                            next();
+                            return comando();
+                        } else {
+                            next();
+                            return true;
+                        }
+                    }
+                }
             }
 
-            return true;
         } else if (simbolo.token.equals("while")) {
             next();
-            return true;
+            if (expressao()) {
+                if (simbolo.token.equals("do")) {
+                    next();
+                    return comando();
+                } else {
+                    Error("Erro no while");
+                    return false;
+                }
+            }
+        } else if (simbolo.token.equals("case")) {
+            next();
+            if (simbolo.classificacao.equals(Dicionario.NUMERO_INTEIRO)) {
+                next();
+                if (simbolo.token.equals("of")) {
+                    next();
+                    if (selecao()) {
+                        if (simbolo.token.equals("else")) {
+                            next();
+                            if (lista_de_comandos()) {
+                                next();
+                                if (simbolo.token.equals("end")) {
+                                    next();
+                                    if (simbolo.token.equals(";")) {
+                                        return true;
+                                    } else {
+                                        Error("erro no ;");
+                                        return false;
+                                    }
+                                } else {
+
+                                }
+                            }
+                        } else {
+                            next();
+                            return true;
+                        }
+
+                    } else {
+                        Error("erro no case");
+                        return false;
+                    }
+                } else {
+                    Error("erro no case");
+                    return false;
+                }
+
+            } else {
+                Error("erro no case");
+                return false;
+            }
+        } else {
+            return false;
+        }
+        return false;
+    }
+
+    public boolean selecao() {
+        if (simbolo.classificacao.equals(Dicionario.NUMERO_INTEIRO)) {
+            next();
+            if (simbolo.token.equals(":")) {
+                next();
+                if (comando()) {
+                    if (simbolo.token.equals(";")) {
+                        next();
+                        // mudar para zerar o comando
+                        if (simbolo.classificacao.equals(Dicionario.NUMERO_INTEIRO)) {
+                            return selecao();
+                        } else {
+                            return true;
+                        }
+                    } else {
+                        Error("erro no case");
+                        return false;
+                    }
+                } else {
+                    Error("erro no case");
+                    return false;
+                }
+            } else {
+                Error("erro no case");
+                return false;
+            }
+        } else {
+            Error("erro no case");
+            return false;
+        }
+    }
+
+    private boolean ativacaoDeProcedimento() {
+        if (simbolo.classificacao.equals(Dicionario.IDENTIFICADOR)) {
+            next();
+            if (simbolo.token.equals("(")) {
+                next();
+                if (lista_de_expressoes()) {
+                    if (simbolo.token.equals(")")) {
+                        next();
+                        return true;
+                    } else {
+                        Error("Erro na ativaçao");
+                        return false;
+                    }
+                }
+
+            } else {
+                back();
+                return false;
+            }
         }
 
         return false;
@@ -299,9 +442,8 @@ public class Sintatico {
     private boolean expressao() {
         if (expressao_simples()) {
             if (op_relacional()) {
-                if (expressao()) {
-                    return true;
-                }
+                next();
+                return expressao_simples();
             }
             return true;
         }
@@ -311,22 +453,17 @@ public class Sintatico {
 
     private boolean expressao_simples() {
         if (termo()) {
-            next();
             if (op_aditivo()) {
                 next();
                 return expressao_simples();
-            } else {
-                back();
             }
             return true;
 
         } else if (sinal()) {
-            next();
-            if (termo()) {
-                return true;
-            }
-            return true;
+            return termo();
         }
+
+        Error("Falta um termo");
 
         return false;
     }
@@ -334,20 +471,14 @@ public class Sintatico {
     private boolean termo() {
         if (fator()) {
             next();
-
             if (op_multiplicativo()) {
                 next();
-
-                if (fator())
-                    return true;
-                else
-                    Error("Falta identificacao da varivável");
-
-            } else {
-                back();
-                return true;
+                return termo();
             }
+            return true;
         }
+
+        Error("Erro no termo");
         return false;
     }
 
@@ -361,23 +492,40 @@ public class Sintatico {
                 if (lista_de_expressoes()) {
                     next();
 
-                    if (simbolo.token.equals(")"))
+                    if (simbolo.token.equals(")")) {
+                        next();
                         return true;
-
+                    }
                 }
-
+            } // (
+            back();
+            return true;
+        } else if (simbolo.classificacao.equals(Dicionario.NUMERO_INTEIRO)) {
+            return true;
+        } else if (simbolo.classificacao.equals(Dicionario.NUMERO_REAL)) {
+            return true;
+        } else if (simbolo.token.equals("true")) {
+            return true;
+        } else if (simbolo.token.equals("false")) {
+            return true;
+        } else if (simbolo.token.equals("(")) {
+            next();
+            if (expressao()) {
+                return simbolo.token.equals(")");
             } else {
-                back();
+                Error("Erro no fator");
+                return false;
             }
 
-            return true;
-
+        } else if (simbolo.token.equals("not")) {
+            next();
+            return fator();
         } else {
-            // Error("Falta identificacao de variavel");
+            Error("Erro no fator");
+            return false;
         }
 
-        return false;
-    }
+    }// fim de fator
 
     private boolean sinal() {
         return simbolo.token.matches(Dicionario.operadoresAditivos);
