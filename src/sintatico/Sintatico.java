@@ -85,14 +85,16 @@ public class Sintatico {
 
         // ja foram verificadas 3 linhas da tabela
         if (is_program_id) {
-            id = new Identificador(tabela.get(1).classificacao, tabela.get(0).token);
+            id = new Identificador(tabela.get(0).token, tabela.get(1).classificacao);
 
             if(semantico.isEquals( id.nome, id.tipo)) {
                 System.out.println("Erro Semântico, nome do programa é igual a " + tabela.get(1).classificacao);
                 return false;
             }
 
+
             next();
+            semantico.inicioPrograma(new semantico.Identificador(simbolo.token, simbolo.classificacao));
             next();
         }
 
@@ -114,7 +116,7 @@ public class Sintatico {
 
         if (simbolo.classificacao.equals(Dicionario.IDENTIFICADOR)) {
 
-            semantico.pushId(new Identificador(simbolo.token, Dicionario.STR_NULO));
+            semantico.addIdentificador(new Identificador(simbolo.token, Dicionario.STR_NULO));
 
             next();
 
@@ -157,6 +159,9 @@ public class Sintatico {
             next();
 
             if (simbolo.classificacao.equals(Dicionario.IDENTIFICADOR)) {
+
+                semantico.addProcedure(new Identificador(simbolo.token, simbolo.classificacao));
+
                 next();
 
                 if (argumentos()) {
@@ -200,13 +205,21 @@ public class Sintatico {
 
     private boolean lista_de_parametros() {
 
+        Identificador id = new Identificador("","");
+
         if (simbolo.classificacao.equals(Dicionario.IDENTIFICADOR)) {
+
+            id.nome = simbolo.token;
             next();
 
             if (simbolo.token.equals(":")) {
                 next();
 
                 if (tipo()) {
+
+                    id.tipo = simbolo.token;
+                    semantico.addIdentificador(id);
+
                     next();
 
                     if (simbolo.token.equals(",")) {
@@ -232,17 +245,26 @@ public class Sintatico {
 
     private boolean comando_composto() {
         if (simbolo.token.equals("begin")) {
+            semantico.escopoAberto();
             next();
 
             if (comandos_opcionais()) {
                 if (simbolo.token.equals("end")) {
+
+                    semantico.escopoFechado();
                     next();
+
                     if (simbolo.token.equals("end")) {
+                        semantico.escopoFechado();
+
                         next();
-                        simbolo.token.equals(".");
-                        System.out.println("Programa concluido com sucesso");
-                        System.exit(0);
-                        // return true;
+
+                        if(simbolo.token.equals(".")){
+                            System.out.println("Programa concluido com sucesso");
+                            System.exit(0);
+                            // return true;
+                        }
+
                     } else if (simbolo.token.equals("begin")) {
                         comando_composto();
                     }
@@ -287,6 +309,7 @@ public class Sintatico {
             if (ativacaoDeProcedimento()) {
                 return true;
             } else {
+                semantico.addIdentificador(new Identificador(simbolo.token, simbolo.classificacao));
                 next();
                 if (simbolo.token.equals(":=")) {
                     next();
@@ -488,6 +511,9 @@ public class Sintatico {
 
     private boolean fator() {
         if (simbolo.classificacao.equals(Dicionario.IDENTIFICADOR)) {
+
+            semantico.addIdentificador(new Identificador(simbolo.token, simbolo.classificacao));
+
             next();
 
             if (simbolo.token.equals("(")) {

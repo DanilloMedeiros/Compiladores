@@ -17,7 +17,6 @@ public class Test {
 
         Sintatico sintatico = new Sintatico(tabela);
 
-
         sintatico.analisar();
 
         // LinkedList<Integer> values = new LinkedList<>();
