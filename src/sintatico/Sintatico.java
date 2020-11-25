@@ -21,12 +21,7 @@ public class Sintatico {
     }
 
     public void analisar() {
-        // for (Simbolo simbolo : tabela) {
-        // System.out.println(simbolo.toString());
-        // }
-
         programa();
-
     }
 
     private void next() {

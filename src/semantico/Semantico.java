@@ -2,8 +2,6 @@ package semantico;
 
 import java.util.LinkedList;
 
-import lexico.Dicionario;
-
 public class Semantico {
 
     int escopo = 0;

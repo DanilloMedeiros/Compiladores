@@ -1,5 +1,4 @@
 
-import java.util.LinkedList;
 import java.util.List;
 
 import lexico.*;
@@ -19,19 +18,6 @@ public class Test {
 
         sintatico.analisar();
 
-        // LinkedList<Integer> values = new LinkedList<>();
-
-        // values.push(1);
-        // values.push(2);
-        // values.push(3);
-        // values.push(4);
-        // values.push(5);
-
-        // values.pop();
-
-        // for (Integer value : values) {
-        //     System.out.println(value);
-        // }
 
     }
 
